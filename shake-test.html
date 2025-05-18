@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shake Detection</title>
+</head>
+<body>
+  <h1>Shake Detection Test</h1>
+  <button onclick="startShakeDetection()">Start Detection</button>
+  <p><strong>Status:</strong> <span id="output">Waiting...</span></p>
+  <p><strong>Accelerometer:</strong> <span id="acc"></span></p>
+
+  <script>
+    let lastX, lastY, lastZ;
+    const shakeThreshold = 15;
+
+    function startShakeDetection() {
+      document.getElementById("output").textContent = "Listening for motion...";
+
+      window.addEventListener("devicemotion", event => {
+        const acc = event.accelerationIncludingGravity;
+        if (!acc) return;
+
+        const { x = 0, y = 0, z = 0 } = acc;
+        document.getElementById("acc").textContent =
+          `x: ${x.toFixed(2)}, y: ${y.toFixed(2)}, z: ${z.toFixed(2)}`;
+
+        if (lastX !== undefined) {
+          const deltaX = Math.abs(x - lastX);
+          const deltaY = Math.abs(y - lastY);
+          const deltaZ = Math.abs(z - lastZ);
+
+          const delta = deltaX + deltaY + deltaZ;
+
+          if (delta > shakeThreshold) {
+            document.getElementById("output").textContent =
+              `Shake Detected! (delta: ${delta.toFixed(2)})`;
+            alert("Shake detected!");
+          }
+        }
+
+        lastX = x;
+        lastY = y;
+        lastZ = z;
+      });
+    }
+  </script>
+</body>
+</html>
